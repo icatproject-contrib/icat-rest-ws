@@ -4,46 +4,29 @@
  */
 package icat.rest.ws.converter;
 
-import java.util.Date;
+import java.util.ArrayList;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import org.apache.log4j.Logger;
-import org.icatproject.core.entity.Investigation;
+
 
 /**
  *
  * @author 3qr
  */
-@XmlRootElement(name = "metadata")
-public class InvestigationConverter extends Investigation {
+@XmlRootElement(name = "proposals")
+public class InvestigationConverter {
+
+  private static Logger log = Logger.getLogger(InvestigationConverter.class);
 
   @XmlElement
-  private String facility;
-  @XmlElement
-  private String instrument;
-  @XmlElement
-  private String proposal;
-  @XmlElement
-  private String collection;
-  @XmlElement
-  private String title;
-  @XmlElement
-  private Date startTime;
-  @XmlElement
-  private Date createTime;
-  private static Logger log = Logger.getLogger(InvestigationConverter.class);
+  private ArrayList<String> proposal;
 
   public InvestigationConverter() {
   }
 
-  public InvestigationConverter(Investigation inv) {
-
-    this.facility = inv.getFacility().getName();
-    this.instrument = inv.getInstrument().getName();
-    this.proposal = inv.getName();
-    this.collection = inv.getVisitId();
-    this.title = inv.getTitle();
-    this.createTime = inv.getCreateTime();
-    this.startTime = inv.getStartDate();
+  public InvestigationConverter(ArrayList<String> list) {
+    proposal = list;
   }
+  
 }

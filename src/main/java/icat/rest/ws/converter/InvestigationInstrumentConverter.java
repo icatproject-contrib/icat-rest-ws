@@ -14,17 +14,17 @@ import org.apache.log4j.Logger;
  * @author 3qr
  */
 @XmlRootElement(name = "instruments")
-public class InstrumentConverter {
+public class InvestigationInstrumentConverter {
 
-  private static Logger log = Logger.getLogger(InstrumentConverter.class);
+  private static Logger log = Logger.getLogger(InvestigationInstrumentConverter.class);
 
   @XmlElement
   private Collection<String> instrument;
 
-  public InstrumentConverter() {
+  public InvestigationInstrumentConverter() {
   }
 
-  public InstrumentConverter(Collection<String> list) {
+  public InvestigationInstrumentConverter(Collection<String> list) {
     this.instrument = list;
   }
 }

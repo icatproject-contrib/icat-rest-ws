@@ -13,17 +13,17 @@ import org.apache.log4j.Logger;
  * @author 3qr
  */
 @XmlRootElement(name = "runs")
-public class RunConverter {
+public class InvestigationDatasetConverter {
 
-  private static Logger log = Logger.getLogger(RunConverter.class);
+  private static Logger log = Logger.getLogger(InvestigationDatasetConverter.class);
 
   @XmlElement
   private String runRange;
   
-  public RunConverter() {
+  public InvestigationDatasetConverter() {
   }
 
-  public RunConverter(String runRange) {
+  public InvestigationDatasetConverter(String runRange) {
     this.runRange = runRange;
   }
 }

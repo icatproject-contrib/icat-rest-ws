@@ -17,6 +17,7 @@ import org.apache.log4j.Logger;
 public class RunsInfoConverter {
 
   private static Logger log = Logger.getLogger(RunsInfoConverter.class);
+  
   @XmlElement
   private ArrayList<RunInfoConverter> run;
 

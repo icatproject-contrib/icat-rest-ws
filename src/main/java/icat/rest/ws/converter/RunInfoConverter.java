@@ -19,12 +19,10 @@ import org.icatproject.core.entity.ParameterType;
  * @author 3qr
  */
 @XmlRootElement(name = "run")
-
-public class RunInfoConverter {
+public class RunInfoConverter implements Comparable<RunInfoConverter> {
 
   @XmlAttribute
   private String id;
-    
   @XmlElement
   private String title;
   @XmlElement
@@ -72,4 +70,13 @@ public class RunInfoConverter {
 
     log.info("End RunInfoConverter(ds)");
   }
+
+  public int compareTo(RunInfoConverter compareRunInfoConverter) {
+
+    int thisId = Integer.parseInt(this.id);
+    int compareId = Integer.parseInt(compareRunInfoConverter.id);
+    return thisId - compareId;
+    
+  }
+
 }
