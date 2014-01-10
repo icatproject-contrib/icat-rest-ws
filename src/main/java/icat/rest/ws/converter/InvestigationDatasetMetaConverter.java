@@ -47,7 +47,6 @@ public class InvestigationDatasetMetaConverter implements Comparable<Investigati
     Iterator iter = inv.getDatasets().iterator();
     while (iter.hasNext()) {
       Dataset ds = (Dataset) iter.next();
-      log.info("shelly ds.name: " + ds.getName());
       set.add(Integer.parseInt(ds.getName()));
     }
     this.runRange = getRunRange(set);

@@ -178,11 +178,11 @@ public class InvestigationFacadeREST extends AbstractFacade<Investigation> {
   public InvestigationCollectionAllConverter getRunsAll(@PathParam("facil") String facility, @PathParam("inst") String instrument, @PathParam("prop") String proposal, @Context HttpServletRequest requestContext) {
     try {
       String yourIP = requestContext.getRemoteAddr().toString();
-      log.info("Beginning getProposalAll: " + yourIP);
+      log.info("Beginning getRunsAll: " + yourIP);
       String query = "Investigation INCLUDE Dataset, DatasetParameter, DatasetType, ParameterType [name = ':proposal'] <-> Instrument [name = ':instrument']";
       query = query.replace(":instrument", instrument).replace(":proposal", proposal);
       SearchResponse results = BeanManager.search(RestfulConstant.RESTFUL_USER, query, em);
-      log.info("Ending getAll, found " + results.getList().size() + " proposals for instrument " + instrument);
+      log.info("Ending getRunsAll, found " + results.getList().size() + " proposals for instrument " + instrument + " and proposal" + proposal);
       if (results.getList().isEmpty()) {
         return new InvestigationCollectionAllConverter();
       } else {
@@ -195,7 +195,7 @@ public class InvestigationFacadeREST extends AbstractFacade<Investigation> {
         return new InvestigationCollectionAllConverter(list);
       }
     } catch (IcatException ex) {
-      log.error("In getProposalAll: got IcatException " + ex.getMessage());
+      log.error("In getRunsAll: got IcatException " + ex.getMessage());
       return new InvestigationCollectionAllConverter();
     }
   }

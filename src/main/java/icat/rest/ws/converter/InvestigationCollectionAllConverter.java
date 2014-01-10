@@ -26,7 +26,7 @@ public class InvestigationCollectionAllConverter {
 
   public InvestigationCollectionAllConverter(ArrayList<Investigation> invList) {
     ArrayList<InvestigationDatasetAllConverter> list = new ArrayList<InvestigationDatasetAllConverter>();
-    log.info("shelly invList = " + invList.size());
+    log.info("invList = " + invList.size());
       
     for (int i=0; i<invList.size(); i++) {
 

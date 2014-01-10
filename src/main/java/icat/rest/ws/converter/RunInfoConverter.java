@@ -42,41 +42,42 @@ public class RunInfoConverter implements Comparable<RunInfoConverter> {
   }
 
   public RunInfoConverter(Dataset ds) {
-    log.info("Begin  RunInfoConverter name: " + ds.getName());
-
-    if (ds.getType().getName().equalsIgnoreCase("experiment_raw")) {
-      this.id = ds.getName();
-      this.title = ds.getDescription();
-      this.startTime = ds.getStartDate();
-      this.endTime = ds.getEndDate();
-      log.debug("getParameters: " + ds.getParameters().size());
-      Iterator iter = ds.getParameters().iterator();
-      while (iter.hasNext()) {
-        DatasetParameter dsp = (DatasetParameter) iter.next();
-        ParameterType type = dsp.getType();
-        log.info("dataset parameter type: " + type.getName());
-        if (type.getName().equalsIgnoreCase("duration")) {
-          log.debug("dataset duration: " + dsp.getNumericValue());
-          this.duration = String.valueOf(dsp.getNumericValue());
-        } else if (type.getName().equalsIgnoreCase("proton_charge")) {
-          log.debug("dataset duration: " + dsp.getStringValue());
-          this.protonCharge = dsp.getStringValue();
-        } else if (type.getName().equalsIgnoreCase("total_counts")) {
-          log.debug("dataset total_counts: " + dsp.getNumericValue());
-          this.totalCounts = String.valueOf(dsp.getNumericValue());
-        }
+    log.debug("Begin  RunInfoConverter name: " + ds.getName());
+    
+    this.id = ds.getName();
+    this.title = ds.getDescription();
+    this.startTime = ds.getStartDate();
+    this.endTime = ds.getEndDate();
+    log.debug("getParameters: " + ds.getParameters().size());
+    Iterator iter = ds.getParameters().iterator();
+    while (iter.hasNext()) {
+      DatasetParameter dsp = (DatasetParameter) iter.next();
+      ParameterType type = dsp.getType();
+      log.debug("dataset parameter type: " + type.getName());
+      if (type.getName().equalsIgnoreCase("duration")) {
+        log.debug("dataset duration: " + dsp.getNumericValue());
+        this.duration = String.valueOf(dsp.getNumericValue());
+      } else if (type.getName().equalsIgnoreCase("proton_charge")) {
+        log.debug("dataset duration: " + dsp.getStringValue());
+        this.protonCharge = dsp.getStringValue();
+      } else if (type.getName().equalsIgnoreCase("total_counts")) {
+        log.debug("dataset total_counts: " + dsp.getNumericValue());
+        this.totalCounts = String.valueOf(dsp.getNumericValue());
       }
     }
 
-    log.info("End RunInfoConverter(ds)");
+    log.debug("End RunInfoConverter(ds)");
   }
 
   public int compareTo(RunInfoConverter compareRunInfoConverter) {
 
-    int thisId = Integer.parseInt(this.id);
+    int thisId = Integer.parseInt(id);
     int compareId = Integer.parseInt(compareRunInfoConverter.id);
     return thisId - compareId;
-    
+
   }
 
+  public String toString() {
+    return this.id + "-" + this.title;
+  }
 }
