@@ -5,6 +5,7 @@
 package icat.rest.ws.converter;
 
 import java.util.ArrayList;
+import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import org.apache.log4j.Logger;
@@ -15,24 +16,23 @@ import org.icatproject.core.entity.Investigation;
  * @author 3qr
  */
 @XmlRootElement(name = "proposals")
-public class InvestigationCollectionAllConverter {
+public class InvestigationDatasetAllWrapperConverter {
 
-  @XmlElement
-  private ArrayList<InvestigationDatasetAllConverter> proposal;
-  private static Logger log = Logger.getLogger(InvestigationCollectionAllConverter.class);
+  @XmlElement(name = "proposal")
+  private List<InvestigationDatasetAllConverter> proposals = new ArrayList<InvestigationDatasetAllConverter>();
+  private static Logger log = Logger.getLogger(InvestigationMetaWrapperConverter.class);
 
-  public InvestigationCollectionAllConverter() {
+  public InvestigationDatasetAllWrapperConverter() {
   }
 
-  public InvestigationCollectionAllConverter(ArrayList<Investigation> invList) {
+  public InvestigationDatasetAllWrapperConverter(ArrayList<Investigation> invList) {
     ArrayList<InvestigationDatasetAllConverter> list = new ArrayList<InvestigationDatasetAllConverter>();
-    log.info("invList = " + invList.size());
-      
-    for (int i=0; i<invList.size(); i++) {
 
+    for (int i = 0; i < invList.size(); i++) {
       InvestigationDatasetAllConverter invConvertor = new InvestigationDatasetAllConverter(invList.get(i));
       list.add(invConvertor);
     }
-    this.proposal = list;
+
+    this.proposals = list;
   }
 }

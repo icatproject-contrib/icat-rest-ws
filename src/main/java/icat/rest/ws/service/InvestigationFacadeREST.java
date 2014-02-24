@@ -46,7 +46,7 @@ public class InvestigationFacadeREST extends AbstractFacade<Investigation> {
   @GET
   @Path("{facil}")
   @Produces({"application/xml", "application/json"})
-  public InvestigationInstrumentConverter getInstruments(@PathParam("facil") String facility, @Context HttpServletRequest requestContext) {
+  public InvestigationInstrumentWrapperConverter getInstruments(@PathParam("facil") String facility, @Context HttpServletRequest requestContext) {
     ArrayList<String> list = new ArrayList<String>();
     try {
       String yourIP = requestContext.getRemoteAddr().toString();
@@ -64,17 +64,17 @@ public class InvestigationFacadeREST extends AbstractFacade<Investigation> {
     } catch (Exception ex) {
       log.error("In getInstruments: got Exception " + ex.getMessage());
     } finally {
-      return new InvestigationInstrumentConverter(list);
+      return new InvestigationInstrumentWrapperConverter(list);
     }
   }
 
   @GET
   @Path("{facil}/{inst}")
   @Produces({"application/xml", "application/json"})
-  public InvestigationConverter getInvestigations(@PathParam("facil") String facility, @PathParam("inst") String instrument, @Context HttpServletRequest requestContext) {
+  public InvestigationProposalWrapperConverter getInvestigations(@PathParam("facil") String facility, @PathParam("inst") String instrument, @Context HttpServletRequest requestContext) {
     try {
       String yourIP = requestContext.getRemoteAddr().toString();
-      log.info("Beginning getProposals: " + yourIP);
+      log.info("Beginning getInvestigations: " + yourIP);
       String query = "DISTINCT Investigation.name ORDER BY name <-> Instrument [ name = ':instrument']";
       query = query.replace(":instrument", instrument);
       SearchResponse results = BeanManager.search(RestfulConstant.RESTFUL_USER, query, em);
@@ -83,46 +83,74 @@ public class InvestigationFacadeREST extends AbstractFacade<Investigation> {
       while (iter.hasNext()) {
         list.add((String) iter.next());
       }
-      log.info("Ending getProposals, found " + list.size() + " proposals for instrment " + instrument);
-      return new InvestigationConverter(list);
+      log.info("Ending getInvestigations, found " + list.size() + " proposals for instrument " + instrument);
+      return new InvestigationProposalWrapperConverter(list);
     } catch (IcatException ex) {
-      log.error("In getProposals: got IcatException " + ex.getMessage());
-      return new InvestigationConverter();
+      log.error("In getInvestigations: got IcatException " + ex.getMessage());
+      return new InvestigationProposalWrapperConverter();
     }
   }
 
   @GET
-  @Path("{facil}/{inst}/all")
+  @Path("{facil}/{inst}/meta")
   @Produces({"application/xml", "application/json"})
-  public InvestigationAllConverter getInvestigationsAll(@PathParam("facil") String facility, @PathParam("inst") String instrument, @Context HttpServletRequest requestContext) {
+  public InvestigationMetaWrapperConverter getInvestigationsMeta(@PathParam("facil") String facility, @PathParam("inst") String instrument, @Context HttpServletRequest requestContext) {
     try {
       String yourIP = requestContext.getRemoteAddr().toString();
-      log.info("Beginning getProposalsAll: " + yourIP);
-      String query = "Investigation INCLUDE Dataset, DatasetType <-> Instrument [name = ':instrument']";
+      log.info("Beginning getInvestigationsMeta: " + yourIP);
+      String query = "Investigation <-> Instrument [name = ':instrument']";
       query = query.replace(":instrument", instrument);
       SearchResponse results = BeanManager.search(RestfulConstant.RESTFUL_USER, query, em);
-      log.info("Ending getProposalsAll, found " + results.getList().size() + " proposals for instrument " + instrument);
+      log.info("Ending getInvestigationsMeta, found " + results.getList().size() + " proposals for instrument " + instrument);
       ArrayList<Investigation> invList = new ArrayList<Investigation>();
       if (results.getList().isEmpty()) {
-        return new InvestigationAllConverter();
+        return new InvestigationMetaWrapperConverter();
       } else {
         Iterator iter = results.getList().iterator();
         while (iter.hasNext()) {
           Investigation inv = (Investigation) iter.next();
           invList.add(inv);
         }
-        return new InvestigationAllConverter(invList);
+        return new InvestigationMetaWrapperConverter(invList);
       }
     } catch (IcatException ex) {
-      log.error("In getProposalsAll: got IcatException " + ex.getMessage());
-      return new InvestigationAllConverter();
+      log.error("In getInvestigationsMeta: got IcatException " + ex.getMessage());
+      return new InvestigationMetaWrapperConverter();
+    }
+  }
+    
+  @GET
+  @Path("{facil}/{inst}/all")
+  @Produces({"application/xml", "application/json"})
+  public InvestigationAllWrapperConverter getInvestigationsAll(@PathParam("facil") String facility, @PathParam("inst") String instrument, @Context HttpServletRequest requestContext) {
+    try {
+      String yourIP = requestContext.getRemoteAddr().toString();
+      log.info("Beginning getInvestigationsAll: " + yourIP);
+      String query = "Investigation INCLUDE Dataset, DatasetType <-> Instrument [name = ':instrument']";
+      query = query.replace(":instrument", instrument);
+      SearchResponse results = BeanManager.search(RestfulConstant.RESTFUL_USER, query, em);
+      log.info("Ending getInvestigationsAll, found " + results.getList().size() + " proposals for instrument " + instrument);
+      ArrayList<Investigation> invList = new ArrayList<Investigation>();
+      if (results.getList().isEmpty()) {
+        return new InvestigationAllWrapperConverter();
+      } else {
+        Iterator iter = results.getList().iterator();
+        while (iter.hasNext()) {
+          Investigation inv = (Investigation) iter.next();
+          invList.add(inv);
+        }
+        return new InvestigationAllWrapperConverter(invList);
+      }
+    } catch (IcatException ex) {
+      log.error("In getInvestigationsAll: got IcatException " + ex.getMessage());
+      return new InvestigationAllWrapperConverter();
     }
   }
 
   @GET
   @Path("{facil}/{inst}/{prop}")
   @Produces({"application/xml", "application/json"})
-  public InvestigationDatasetConverter getRuns(@PathParam("facil") String facility, @PathParam("inst") String instrument, @PathParam("prop") String proposal, @Context HttpServletRequest requestContext) {
+  public InvestigationRunWrapperConverter getRuns(@PathParam("facil") String facility, @PathParam("inst") String instrument, @PathParam("prop") String proposal, @Context HttpServletRequest requestContext) {
     try {
       String yourIP = requestContext.getRemoteAddr().toString();
       log.info("Beginning getRuns: " + yourIP);
@@ -130,33 +158,32 @@ public class InvestigationFacadeREST extends AbstractFacade<Investigation> {
       query = query.replace(":instrument", instrument).replace(":proposal", proposal);
       SearchResponse results = BeanManager.search(RestfulConstant.RESTFUL_USER, query, em);
       Iterator iter = results.getList().iterator();
-      log.info("results size: " + results.getList().size());
+      log.info("Ending getRuns, results size: " + results.getList().size());
       TreeSet set = new TreeSet();
       while (iter.hasNext()) {
         String runNumber = (String) iter.next();
         set.add(Integer.parseInt(runNumber));
       }
-      String runRange = getRunRange(set);
-      return new InvestigationDatasetConverter(runRange);
+      return new InvestigationRunWrapperConverter(set);
     } catch (IcatException ex) {
       log.error("In getRuns: got IcatException " + ex.getMessage());
-      return new InvestigationDatasetConverter();
+      return new InvestigationRunWrapperConverter();
     }
   }
 
   @GET
   @Path("{facil}/{inst}/{prop}/meta")
   @Produces({"application/xml", "application/json"})
-  public InvestigationCollectionMetaConverter getRunsMeta(@PathParam("facil") String facility, @PathParam("inst") String instrument, @PathParam("prop") String proposal, @Context HttpServletRequest requestContext) {
+  public InvestigationAllWrapperConverter getRunsMeta(@PathParam("facil") String facility, @PathParam("inst") String instrument, @PathParam("prop") String proposal, @Context HttpServletRequest requestContext) {
     try {
       String yourIP = requestContext.getRemoteAddr().toString();
-      log.info("Beginning getMeta: " + yourIP);
+      log.info("Beginning getRunsMeta: " + yourIP);
       String query = "Investigation INCLUDE Dataset [ name = ':proposal' ] <-> Instrument [ name = ':instrument']";
       query = query.replace(":instrument", instrument).replace(":proposal", proposal);
       SearchResponse results = BeanManager.search(RestfulConstant.RESTFUL_USER, query, em);
-      log.info("Ending getMeta, found " + results.getList().size() + " proposals for instrument " + instrument);
+      log.info("Ending getRunsMeta, found " + results.getList().size() + " proposals for instrument " + instrument);
       if (results.getList().isEmpty()) {
-        return new InvestigationCollectionMetaConverter();
+        return new InvestigationAllWrapperConverter();
       } else {
         ArrayList<Investigation> list = new ArrayList<Investigation>();
         Iterator iter = results.getList().iterator();
@@ -164,18 +191,18 @@ public class InvestigationFacadeREST extends AbstractFacade<Investigation> {
           Investigation inv = (Investigation) iter.next();
           list.add(inv);
         }
-        return new InvestigationCollectionMetaConverter(list);
+        return new InvestigationAllWrapperConverter(list);
       }
     } catch (IcatException ex) {
-      log.error("In getMeta: got IcatException " + ex.getMessage());
-      return new InvestigationCollectionMetaConverter();
+      log.error("In getRunsMeta: got IcatException " + ex.getMessage());
+      return new InvestigationAllWrapperConverter();
     }
   }
 
   @GET
   @Path("{facil}/{inst}/{prop}/all")
   @Produces({"application/xml", "application/json"})
-  public InvestigationCollectionAllConverter getRunsAll(@PathParam("facil") String facility, @PathParam("inst") String instrument, @PathParam("prop") String proposal, @Context HttpServletRequest requestContext) {
+  public InvestigationDatasetAllWrapperConverter getRunsAll(@PathParam("facil") String facility, @PathParam("inst") String instrument, @PathParam("prop") String proposal, @Context HttpServletRequest requestContext) {
     try {
       String yourIP = requestContext.getRemoteAddr().toString();
       log.info("Beginning getRunsAll: " + yourIP);
@@ -184,7 +211,7 @@ public class InvestigationFacadeREST extends AbstractFacade<Investigation> {
       SearchResponse results = BeanManager.search(RestfulConstant.RESTFUL_USER, query, em);
       log.info("Ending getRunsAll, found " + results.getList().size() + " proposals for instrument " + instrument + " and proposal" + proposal);
       if (results.getList().isEmpty()) {
-        return new InvestigationCollectionAllConverter();
+        return new InvestigationDatasetAllWrapperConverter();
       } else {
         ArrayList<Investigation> list = new ArrayList<Investigation>();
         Iterator iter = results.getList().iterator();
@@ -192,54 +219,16 @@ public class InvestigationFacadeREST extends AbstractFacade<Investigation> {
           Investigation inv = (Investigation) iter.next();
           list.add(inv);
         }
-        return new InvestigationCollectionAllConverter(list);
+        return new InvestigationDatasetAllWrapperConverter(list);
       }
     } catch (IcatException ex) {
       log.error("In getRunsAll: got IcatException " + ex.getMessage());
-      return new InvestigationCollectionAllConverter();
+      return new InvestigationDatasetAllWrapperConverter();
     }
   }
 
   @Override
   protected EntityManager getEntityManager() {
     return em;
-  }
-
-  private String getRunRange(TreeSet set) {
-    log.info("Beginning getRunRange()");
-    String runRange = "";
-    int oldRunNumber = 0;
-
-    Iterator it = set.iterator();
-    boolean firstRun = true;
-    boolean inIncrement = false;
-    while (it.hasNext()) {
-      int runNumber = (Integer) it.next();
-      if (firstRun) {
-        runRange = Integer.toString(runNumber);
-        firstRun = false;
-      } else {
-        if (runNumber == oldRunNumber + 1) {
-          if (!inIncrement) {
-            runRange = runRange.concat("-");
-            inIncrement = true;
-          }
-        } else {
-          if (inIncrement) {
-            runRange = runRange.concat(Integer.toString(oldRunNumber));
-            inIncrement = false;
-          }
-          runRange = runRange.concat(", ").concat(Integer.toString(runNumber));
-        }
-      }
-      oldRunNumber = runNumber;
-    }
-
-    //Be careful here, we might have exited in the middle of an incremental range. If so, tack on the last number.
-    if (inIncrement) {
-      runRange = runRange.concat(Integer.toString(oldRunNumber));
-    }
-    log.info("Ending getRunRange() run range is: " + runRange);
-    return runRange;
   }
 }

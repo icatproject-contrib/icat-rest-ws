@@ -4,6 +4,7 @@
  */
 package icat.rest.ws.converter;
 
+import java.util.TreeSet;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import org.apache.log4j.Logger;
@@ -13,17 +14,16 @@ import org.apache.log4j.Logger;
  * @author 3qr
  */
 @XmlRootElement(name = "runs")
-public class InvestigationDatasetConverter {
+public class InvestigationRunWrapperConverter {
 
-  private static Logger log = Logger.getLogger(InvestigationDatasetConverter.class);
-
-  @XmlElement
+  private static Logger log = Logger.getLogger(InvestigationRunWrapperConverter.class);
+  @XmlElement(name = "runRange")
   private String runRange;
-  
-  public InvestigationDatasetConverter() {
+
+  public InvestigationRunWrapperConverter() {
   }
 
-  public InvestigationDatasetConverter(String runRange) {
-    this.runRange = runRange;
+  public InvestigationRunWrapperConverter(TreeSet set) {
+    this.runRange = RunRangeCalculator.getRunRange(set);
   }
 }

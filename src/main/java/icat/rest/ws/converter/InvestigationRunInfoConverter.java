@@ -19,7 +19,7 @@ import org.icatproject.core.entity.ParameterType;
  * @author 3qr
  */
 @XmlRootElement(name = "run")
-public class RunInfoConverter implements Comparable<RunInfoConverter> {
+public class InvestigationRunInfoConverter implements Comparable<InvestigationRunInfoConverter> {
 
   @XmlAttribute
   private String id;
@@ -35,15 +35,15 @@ public class RunInfoConverter implements Comparable<RunInfoConverter> {
   private String protonCharge;
   @XmlElement
   private String totalCounts;
-  private static Logger log = Logger.getLogger(RunInfoConverter.class);
+  private static Logger log = Logger.getLogger(InvestigationRunInfoConverter.class);
 
-  public RunInfoConverter() {
+  public InvestigationRunInfoConverter() {
     log.info("default constructor");
   }
 
-  public RunInfoConverter(Dataset ds) {
+  public InvestigationRunInfoConverter(Dataset ds) {
     log.debug("Begin  RunInfoConverter name: " + ds.getName());
-    
+
     this.id = ds.getName();
     this.title = ds.getDescription();
     this.startTime = ds.getStartDate();
@@ -69,7 +69,7 @@ public class RunInfoConverter implements Comparable<RunInfoConverter> {
     log.debug("End RunInfoConverter(ds)");
   }
 
-  public int compareTo(RunInfoConverter compareRunInfoConverter) {
+  public int compareTo(InvestigationRunInfoConverter compareRunInfoConverter) {
 
     int thisId = Integer.parseInt(id);
     int compareId = Integer.parseInt(compareRunInfoConverter.id);

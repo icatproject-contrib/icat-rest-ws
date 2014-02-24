@@ -14,17 +14,16 @@ import org.apache.log4j.Logger;
  * @author 3qr
  */
 @XmlRootElement(name = "runs")
-public class RunsInfoConverter {
+public class InvestigationRunInfoWrapperConverter {
 
-  private static Logger log = Logger.getLogger(RunsInfoConverter.class);
-  
+  private static Logger log = Logger.getLogger(InvestigationRunInfoWrapperConverter.class);
   @XmlElement
-  private ArrayList<RunInfoConverter> run;
+  private ArrayList<InvestigationRunInfoConverter> run;
 
-  public RunsInfoConverter() {
+  public InvestigationRunInfoWrapperConverter() {
   }
 
-  public RunsInfoConverter(ArrayList<RunInfoConverter> run) {
-    this.run= run;
+  public InvestigationRunInfoWrapperConverter(ArrayList<InvestigationRunInfoConverter> run) {
+    this.run = run;
   }
 }
