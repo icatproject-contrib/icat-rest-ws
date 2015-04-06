@@ -41,16 +41,16 @@ public class DatasetFacadeREST extends AbstractFacade<Dataset> {
   }
 
   @GET
-  @Path("{facil}/{inst}/{run}/old")
+  @Path("{facil}/{inst}/{run}")
   @Produces({"application/xml", "application/json"})
-  public DatasetConverter getRunInfoOld(@PathParam("facil") String facility, @PathParam("inst") String instrument, @PathParam("run") String run, @Context HttpServletRequest requestContext) {
+  public DatasetConverter getRunInfo(@PathParam("facil") String facility, @PathParam("inst") String instrument, @PathParam("run") String run, @Context HttpServletRequest requestContext) {
     try {
       String yourIP = requestContext.getRemoteAddr().toString();
-      log.info("Beginning getRunInfoOld: " + yourIP);
+      log.info("Beginning getRunInfo: " + yourIP);
       String query = "Dataset INCLUDE Investigation, Datafile, DatasetType, DatasetParameter, ParameterType [ name = ':run' ] <-> Investigation <-> Instrument [ name = ':instrument']";
       query = query.replace(":instrument", instrument).replace(":run", run);
       SearchResponse results = BeanManager.search(RestfulConstant.RESTFUL_USER, query, em);
-      log.info("getRunInfoOld found " + results.getList().size() + " metadata set(s) for instrument " + instrument + " and run " + run);
+      log.info("getRunInfo found " + results.getList().size() + " metadata set(s) for instrument " + instrument + " and run " + run);
       ArrayList<Dataset> list = new ArrayList<Dataset>();
       if (!results.getList().isEmpty()) {
         Iterator iter = results.getList().iterator();
@@ -58,57 +58,17 @@ public class DatasetFacadeREST extends AbstractFacade<Dataset> {
           Dataset ds = (Dataset) iter.next();
           list.add(ds);
         }
-        log.info("Ending ggetRunInfoOld: ");
+        log.info("Ending getRunInfo: ");
         return new DatasetConverter(list);
       } 
-      log.info("Ending getRunInfoOld: ");
-      return new DatasetConverter();
-    } catch (IcatException ex) {
-      log.error("In getRunInfoOld: got IcatException " + ex.getMessage());
-      return new DatasetConverter();
-    }
-  }
-  
-  @GET
-  @Path("{facil}/{inst}/{run}")
-  @Produces({"application/xml", "application/json"})
-  public DatasetConverter getRunInfo(@PathParam("facil") String facility, @PathParam("inst") String instrument, @PathParam("run") String run, @Context HttpServletRequest requestContext) {
-    try {
-      String yourIP = requestContext.getRemoteAddr().toString();
-      log.info("Beginning getRunInfo: " + yourIP);
-      String query = "Dataset INCLUDE Investigation, DatasetType, DatasetParameter, ParameterType [ name = ':run' ] <-> Investigation <-> Instrument [ name = ':instrument']";
-      query = query.replace(":instrument", instrument).replace(":run", run);
-      SearchResponse results = BeanManager.search(RestfulConstant.RESTFUL_USER, query, em);
-      log.info("Ending getRunInfo, found " + results.getList().size() + " metadata set(s) for instrument " + instrument + " and run " + run);
-
-      if (!results.getList().isEmpty()) {
-        Iterator iter = results.getList().iterator();
-        Dataset myDS = new Dataset();
-        ArrayList<String> myList = new ArrayList<String>();
-        while (iter.hasNext()) {
-          Dataset ds = (Dataset) iter.next();
-          if (ds.getType().getName().equalsIgnoreCase("experiment_raw")) {
-            myDS = ds;
-          }
-          String dfQuery = "Datafile <-> Dataset [ id = ':dsId' ]";
-          dfQuery = dfQuery.replace(":dsId", ds.getId().toString());
-          SearchResponse dfResults = BeanManager.search(RestfulConstant.RESTFUL_USER, dfQuery, em);
-          if (!results.getList().isEmpty()) {
-            Iterator dfIter = dfResults.getList().iterator();
-            while (dfIter.hasNext()) {
-              Datafile df = (Datafile) dfIter.next();
-              myList.add(df.getLocation());
-            }
-          }
-        }
-        return new DatasetConverter(myDS, new DatafileLocation(myList));
-      }
+      log.info("Ending getRunInfo: ");
       return new DatasetConverter();
     } catch (IcatException ex) {
       log.error("In getRunInfo: got IcatException " + ex.getMessage());
       return new DatasetConverter();
     }
-  } 
+  }
+  
     
   @GET
   @Path("{facil}/{inst}/{run}/lite")
