@@ -68,6 +68,32 @@ public class DatasetConverter extends Dataset {
     }
     log.info("End DatasetConverter(Dataset ds)");
   }
+  
+  public DatasetConverter(Dataset ds, DatafileLocation dfLocation) {
+    log.info("Begin DatasetConverter(Dataset ds)");
+    this.proposal = ds.getInvestigation().getName();
+    this.title = ds.getDescription();
+    this.startTime = ds.getStartDate();
+    this.endTime = ds.getEndDate();
+    Iterator iter = ds.getParameters().iterator();
+    while (iter.hasNext()) {
+      DatasetParameter dsp = (DatasetParameter) iter.next();
+      ParameterType type = dsp.getType();
+      log.info("dataset parameter type: " + type.getName());
+      if (type.getName().equalsIgnoreCase("duration")) {
+        log.debug("dataset duration: " + dsp.getNumericValue());
+        this.duration = String.valueOf(dsp.getNumericValue());
+      } else if (type.getName().equalsIgnoreCase("proton_charge")) {
+        log.debug("dataset duration: " + dsp.getStringValue());
+        this.protonCharge = dsp.getStringValue();
+      } else if (type.getName().equalsIgnoreCase("total_counts")) {
+        log.debug("dataset total_counts: " + dsp.getNumericValue());
+        this.totalCounts = String.valueOf(dsp.getNumericValue());
+      }
+    }
+    this.locations = dfLocation;
+    log.info("End DatasetConverter(Dataset ds)");
+  }
 
   public DatasetConverter(ArrayList<Dataset> dsList) {
     log.info("Begin DatasetConverter(ArrayList<Dataset> dsList)");
@@ -111,4 +137,5 @@ public class DatasetConverter extends Dataset {
     this.locations = new DatafileLocation(list);
     log.info("End DatasetConverter(ArrayList<Dataset> dsList)");
   }
+  
 }
