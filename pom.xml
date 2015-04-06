@@ -5,7 +5,7 @@
 
   <groupId>icat.rest.ws</groupId>
   <artifactId>icat-rest-ws</artifactId>
-  <version>1.4-SNAPSHOT</version>
+  <version>1.6-SNAPSHOT</version>
   <packaging>war</packaging>
 
   <name>icat-rest-ws</name>
